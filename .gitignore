@@ -33,3 +33,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# MF90 Termux local credentials and backups
+*.cookie
+backups/
+MF90_Manager/
