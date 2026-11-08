@@ -157,17 +157,19 @@ band_menu(){
   log "Pemeriksaan band tanpa mengubah konfigurasi"; pause
 }
 backup_menu(){
-  local stamp f d a b c e
+  local stamp f d a b c e g h
   stamp="$(date '+%Y%m%d_%H%M%S')"; f="$BACKUP_DIR/MF90_B10_SAFE_$stamp.json"
   d="$(api_get 'wa_inner_version,cr_version,hardware_version,web_version,modem_main_state,network_type,network_provider,signalbar,rssi,lte_rsrp,ppp_status')"
   a="$(api_get 'm_profile_name,Current_index,wan_apn,pdp_type,ppp_auth_mode')"
   b="$(api_get 'wan_dial,dns_mode,ppp_username,ppp_passwd,APN_config0,APN_config1')"
   c="$(api_get 'APN_config2,APN_config3,APN_config4,APN_config5,APN_config6')"
   e="$(api_get 'APN_config7,APN_config8,APN_config9,APN_config10,APN_config11')"
+  g="$(api_get 'APN_config12,APN_config13,APN_config14,APN_config15')"
+  h="$(api_get 'APN_config16,APN_config17,APN_config18,APN_config19')"
   if jq -n --argjson device "$d" --argjson apn "$a" --argjson part1 "$b" --argjson part2 "$c" --argjson part3 "$e" \
     'def scrub: with_entries(if (.key|test("^(APN_config[0-9]+|wan_apn|ppp_username|ppp_passwd|m_profile_name)$")) then .value="[REDACTED]" else . end);
      {created_at:(now|todate),device:"ZTE MF90",firmware_target:"Beeline B10",mode:"SAFE_READ_ONLY",
-      status:$device,apn:($apn|scrub),apn_part1:($part1|scrub),apn_part2:($part2|scrub),apn_part3:($part3|scrub)}' >"$f" 2>/dev/null; then
+      status:$device,apn:($apn|scrub),apn_part1:($part1|scrub),apn_part2:($part2|scrub),apn_part3:($part3|scrub),apn_part4:($part4|scrub),apn_part5:($part5|scrub)}' >"$f" 2>/dev/null; then
     chmod 600 "$f"; ok "Backup SAFE lokal: $f"
     warn "Nama profil, APN, username, password, dan blob profil APN disamarkan."
     warn "Jangan unggah backup atau log modem ke GitHub."
