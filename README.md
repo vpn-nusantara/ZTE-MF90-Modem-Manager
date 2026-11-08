@@ -14,6 +14,7 @@ Manager berbasis Termux untuk ZTE MF90 / MF90 Bolt dengan target firmware Beelin
 - Backup konfigurasi lokal dan panduan pemulihan manual.
 - Kontrol koneksi WAN dengan konfirmasi.
 - Diagnostik koneksi modem dan akses HTTPS internet.
+- Sinkronisasi pembaruan repository melalui GitHub (fast-forward only).
 
 ## Instalasi Termux
 
