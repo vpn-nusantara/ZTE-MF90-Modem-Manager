@@ -13,3 +13,13 @@
 - Added WAN auto/manual dial mode selection, keeping automatic roaming disabled.
 - Rebranded the interactive CLI from ULTIMATE to ADVANCED.
 - No firmware flashing, NV/partition writes, or LTE band-lock writes are included.
+
+
+## 2026-11-08 — SAFE profile
+- Replaced ADVANCED write-capable menu with SAFE read-only operation.
+- Disabled network-mode changes, APN create/update/delete, SMS sending, WAN connect/disconnect, and WAN dial-mode changes.
+- Kept dashboard, APN/SMS reading, signal/band information, diagnostics, Web Admin shortcuts, and Git fast-forward updater.
+- Strengthened local backup redaction for profile name, APN, username, password, and APN profile blobs.
+- Split backup reads into smaller API groups to reduce modem API load.
+- Documented HTTP/session limitations and local-network safety precautions.
+- No firmware flashing, NV/partition writes, band locking, or automatic restore.
