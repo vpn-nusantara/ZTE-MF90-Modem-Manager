@@ -224,7 +224,7 @@ backup_menu(){
   a="$(api_get 'm_profile_name,Current_index,wan_apn,pdp_type,ppp_auth_mode,wan_dial,ppp_username,ppp_passwd,dns_mode,APN_config0,APN_config1,APN_config2,APN_config3,APN_config4')"
   b="$(api_get 'APN_config5,APN_config6,APN_config7,APN_config8,APN_config9,APN_config10,APN_config11,APN_config12,APN_config13,APN_config14,APN_config15,APN_config16,APN_config17,APN_config18,APN_config19')"
   if jq -n --argjson device "$d" --argjson apn "$a" --argjson more "$b" \
-    '{created_at:(now|todate),device:"ZTE MF90",firmware_target:"Beeline B10",status:$device,apn:$apn,apn_extra:$more}' >"$f" 2>/dev/null; then
+    '{created_at:(now|todate),device:"ZTE MF90",firmware_target:"Beeline B10",status:$device,apn:($apn | .ppp_passwd="[REDACTED]"),apn_extra:$more}' >"$f" 2>/dev/null; then
     chmod 600 "$f"; ok "Backup lokal: $f"
     warn "Backup dapat memuat kredensial APN. Jangan unggah ke GitHub atau kirim ke orang lain."
     log "Backup konfigurasi dibuat: $(basename "$f")"
@@ -246,6 +246,58 @@ restore_info(){
   say "Gunakan menu APN modem untuk memasukkan kembali nilai yang diperlukan."
   open_admin; pause
 }
+
+wan_action(){
+  line; say "\${W}KONTROL KONEKSI WAN\${N}"; line
+  say "1) Hubungkan internet seluler"
+  say "2) Putuskan koneksi internet seluler"
+  say "0) Batal"
+  local n form confirm r
+  read -r -p "Pilih: " n
+  case "$n" in
+    1) form='CONNECT_NETWORK';;
+    2) form='DISCONNECT_NETWORK';;
+    0) return;;
+    *) err "Pilihan tidak valid."; pause; return;;
+  esac
+  if [[ "$form" == CONNECT_NETWORK ]]; then
+    warn "Modem akan mencoba membuat koneksi data seluler menggunakan profil APN aktif."
+    read -r -p "Ketik HUBUNGKAN untuk melanjutkan: " confirm
+    [[ "$confirm" == HUBUNGKAN ]] || { warn "Dibatalkan."; pause; return; }
+  else
+    warn "Perangkat yang memakai internet modem akan kehilangan koneksi."
+    read -r -p "Ketik PUTUSKAN untuk melanjutkan: " confirm
+    [[ "$confirm" == PUTUSKAN ]] || { warn "Dibatalkan."; pause; return; }
+  fi
+  r="$(api_set "$form")"
+  show_json "$r"
+  accepted "$r" && ok "Modem menerima perintah $form." || warn "Respons belum mengonfirmasi keberhasilan."
+  log "Permintaan WAN: $form"
+  pause
+}
+health_check(){
+  line; say "\${W}DIAGNOSTIK JARINGAN\${N}"; line
+  say "Host modem : $HOST"
+  if probe; then ok "Web Admin modem dapat dijangkau."
+  else err "Web Admin modem tidak merespons."; fi
+  if command -v ip >/dev/null 2>&1; then
+    say "\nRute jaringan lokal:"
+    ip route 2>/dev/null | head -n 8 || true
+  fi
+  say "\nUji DNS/Internet (maks. 8 detik):"
+  if curl -fsSI --connect-timeout 3 --max-time 8 https://www.cloudflare.com/ >/dev/null 2>&1; then
+    ok "Akses HTTPS internet berhasil."
+  else
+    warn "HTTPS internet gagal/tidak terjangkau. Periksa APN, sinyal, dan paket data."
+  fi
+  say "\nStatus modem (kelompok kecil):"
+  local r
+  r="$(api_get 'modem_main_state,network_type,network_provider,signalbar,wan_ipaddr,ppp_status')"
+  show_json "$r"
+  log "Diagnostik jaringan dijalankan"
+  pause
+}
+
 firmware_info(){
   line; say "${W}FIRMWARE BEELINE B10${N}"; line
   say "Manager ini bukan firmware dan bukan flasher."
@@ -278,12 +330,16 @@ menu(){
   say " ${G}11${N}  Restore / lihat backup APN"
   say " ${G}12${N}  Informasi firmware Beeline B10"
   say " ${G}13${N}  Buka Web Admin"
+  say " ${G}14${N}  Hubungkan / putuskan WAN"
+  say " ${G}15${N}  Diagnostik koneksi & internet"
   say " ${R}00${N}  Keluar"
   line
   read -r -p " Pilih menu: " choice
   case "$choice" in
     0|00) exit 0;;
     13) open_admin; pause; return;;
+    14) require_modem || { pause; return; }; wan_action; return;;
+    15) require_modem || { pause; return; }; health_check; return;;
     12) firmware_info; return;;
     *) require_modem || { pause; return; };;
   esac
