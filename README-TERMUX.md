@@ -48,7 +48,7 @@ MF90_HOST=192.168.0.1 ./mf90-termux-manager.sh
 - Perintah WAN memakai form ID `CONNECT_NETWORK` dan `DISCONNECT_NETWORK` yang didokumentasikan untuk Beeline MF90. Tidak ada jaminan kompatibilitas pada setiap unit.
 - Pengaturan Wi-Fi SSID/password tetap melalui Web Admin. Dokumentasi reverse-engineering Beeline B10 mencantumkan Wireless-LAN sebagai area yang belum terverifikasi; manager tidak mengirim endpoint Wi-Fi tebakan.
 - Penguncian LTE band, perubahan NV/partisi, reboot paksa, dan flashing firmware tidak disediakan.
-- Backup lokal berada di `~/MF90_Manager/backups`, permission dibatasi, dan password APN disamarkan pada backup baru. Jangan pernah unggah cookie, backup, IMEI, IMSI, nomor SIM, atau data pribadi ke repository publik.
+- Backup lokal berada di `~/MF90_Manager/backups`, permission dibatasi, dan password APN dan blob profil APN disamarkan pada backup baru. Jangan pernah unggah cookie, backup, IMEI, IMSI, nomor SIM, atau data pribadi ke repository publik.
 - Password admin tidak dicatat ke log. Cookie sesi dihapus saat manager keluar.
 - Manager bukan flasher dan tidak menyertakan firmware. Image yang salah dapat membuat modem gagal boot.
 - Modem hanya dapat memakai kemampuan radio yang didukung hardware; software tidak dapat menambahkan Wi-Fi 5 GHz pada perangkat 2.4 GHz.
