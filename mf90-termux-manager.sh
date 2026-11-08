@@ -77,6 +77,7 @@ api_get(){
   curl -fsS --connect-timeout 4 --max-time 18 -b "$COOKIE" -c "$COOKIE" \
     -H 'Accept: application/json, text/javascript, */*; q=0.01' \
     -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -e "$HOST/index.html" \
+    --data-urlencode 'isTest=false' --data-urlencode 'multi_data=1' \
     --data-urlencode "cmd=$cmd" "$HOST/goform/goform_get_cmd_process"
 }
 api_set(){
@@ -172,11 +173,18 @@ apn_write(){
 }
 apn_delete(){
   line; say "HAPUS PROFIL APN"; line
-  local idx conf r
+  local idx conf r current_raw current
   warn "Profil APN yang dihapus tidak dapat dipulihkan kecuali Anda memiliki catatan/backup."
   read -r -p "Nomor slot APN yang akan dihapus (0-19): " idx
   [[ "$idx" =~ ^([0-9]|1[0-9])$ ]] || { err "Slot harus 0-19."; pause; return; }
-  say "Periksa slot dan profil yang aktif melalui menu 03 sebelum menghapus."
+  current_raw="$(api_get 'Current_index')" || { err "Tidak dapat membaca profil APN aktif; penghapusan dibatalkan."; pause; return; }
+  current="$(printf '%s' "$current_raw" | jq -r '.Current_index // empty' 2>/dev/null)"
+  [[ -n "$current" ]] || { err "Indeks APN aktif tidak diketahui; penghapusan dibatalkan demi keamanan."; pause; return; }
+  if [[ "$current" == "$idx" ]]; then
+    err "Slot $idx adalah profil APN aktif. Pilih profil lain atau ubah profil default terlebih dahulu."
+    pause; return
+  fi
+  say "Profil aktif berada pada slot $current; slot $idx bukan profil aktif."
   read -r -p "Ketik HAPUS-$idx untuk mengonfirmasi: " conf
   [[ "$conf" == "HAPUS-$idx" ]] || { warn "Dibatalkan."; pause; return; }
   r="$(api_set 'APN_PROC_EX' 'apn_action=delete' "index=$idx")"
