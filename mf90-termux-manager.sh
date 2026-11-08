@@ -317,10 +317,13 @@ update_manager(){
   warn "Pembaruan hanya fast-forward; perubahan lokal tidak akan ditimpa paksa."
   read -r -p "Ketik UPDATE untuk menjalankan git pull --ff-only: " confirm
   [[ "$confirm" == UPDATE ]] || { warn "Dibatalkan."; pause; return; }
-  git -C "$SCRIPT_DIR" pull --ff-only
-  local rc=$?
-  if ((rc==0)); then ok "Sinkronisasi selesai. Jalankan ulang manager agar versi baru aktif."
-  else warn "Git pull gagal atau ada perubahan lokal. Periksa status repository secara manual."; fi
+  local rc=0
+  if git -C "$SCRIPT_DIR" pull --ff-only; then
+    ok "Sinkronisasi selesai. Jalankan ulang manager agar versi baru aktif."
+  else
+    rc=$?
+    warn "Git pull gagal atau ada perubahan lokal. Periksa status repository secara manual."
+  fi
   log "GitHub sync selesai dengan kode $rc"
   pause
 }
