@@ -40,6 +40,7 @@ MF90_HOST=192.168.0.1 ./mf90-termux-manager.sh
 | 12–13 | Informasi firmware dan buka Web Admin |
 | 14 | Hubungkan / putuskan koneksi WAN (konfirmasi wajib) |
 | 15 | Diagnostik akses modem dan HTTPS internet |
+| 16 | Sinkronisasi GitHub dengan fast-forward only |
 
 ## Keamanan dan batas kompatibilitas
 
