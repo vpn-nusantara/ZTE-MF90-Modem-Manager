@@ -7,6 +7,7 @@ umask 077
 APP="MF90 BEELINE B10 MANAGER"
 HOST_RAW="${MF90_HOST:-http://192.168.0.1}"
 HOST="${HOST_RAW%/}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 [[ "$HOST" == http://* || "$HOST" == https://* ]] || HOST="http://$HOST"
 COOKIE="$HOME/.mf90-manager-cookie"
 DATA_DIR="$HOME/MF90_Manager"
@@ -32,7 +33,7 @@ need(){ command -v "$1" >/dev/null 2>&1 || { err "Paket $1 belum terpasang."; re
 
 install_deps(){
   local miss=()
-  for x in curl jq openssl iconv python3 od; do command -v "$x" >/dev/null 2>&1 || miss+=("$x"); done
+  for x in curl jq openssl iconv python3 od git; do command -v "$x" >/dev/null 2>&1 || miss+=("$x"); done
   if (("${#miss[@]}")); then
     warn "Dependensi belum lengkap: ${miss[*]}"
     say "Pasang dengan: pkg update && pkg install curl jq openssl coreutils libiconv python"
@@ -105,9 +106,16 @@ require_modem(){
 
 status_menu(){
   line; say "${W}DASHBOARD MODEM${N}"; line
-  local d
-  d="$(api_get 'wa_inner_version,cr_version,hardware_version,web_version,modem_main_state,pin_status,network_type,network_provider,signalbar,rssi,rscp,lte_rsrp,lte_rsrq,lte_sinr,wan_ipaddr,ppp_status,battery_percent,simcard_roam')"
+  local d n w q
+  say "${C}Firmware & perangkat${N}"
+  d="$(api_get 'wa_inner_version,cr_version,hardware_version,web_version,modem_main_state,pin_status,battery_percent')"
   show_json "$d"
+  say "${C}Jaringan seluler${N}"
+  n="$(api_get 'network_type,network_provider,signalbar,rssi,rscp,lte_rsrp,lte_rsrq,lte_sinr')"
+  show_json "$n"
+  say "${C}Koneksi data${N}"
+  w="$(api_get 'wan_ipaddr,ppp_status,simcard_roam')"
+  show_json "$w"
   log "Membaca dashboard status"; pause
 }
 network_menu(){
@@ -298,6 +306,25 @@ health_check(){
   pause
 }
 
+update_manager(){
+  line; say "${W}SINKRONISASI GITHUB${N}"; line
+  if ! command -v git >/dev/null 2>&1; then err "Git belum terpasang."; pause; return; fi
+  if [[ ! -d "$SCRIPT_DIR/.git" ]]; then
+    warn "Folder manager bukan clone Git; pembaruan otomatis dilewati."
+    say "Gunakan git clone dari repository resmi."
+    pause; return
+  fi
+  warn "Pembaruan hanya fast-forward; perubahan lokal tidak akan ditimpa paksa."
+  read -r -p "Ketik UPDATE untuk menjalankan git pull --ff-only: " confirm
+  [[ "$confirm" == UPDATE ]] || { warn "Dibatalkan."; pause; return; }
+  git -C "$SCRIPT_DIR" pull --ff-only
+  local rc=$?
+  if ((rc==0)); then ok "Sinkronisasi selesai. Jalankan ulang manager agar versi baru aktif."
+  else warn "Git pull gagal atau ada perubahan lokal. Periksa status repository secara manual."; fi
+  log "GitHub sync selesai dengan kode $rc"
+  pause
+}
+
 firmware_info(){
   line; say "${W}FIRMWARE BEELINE B10${N}"; line
   say "Manager ini bukan firmware dan bukan flasher."
@@ -332,6 +359,7 @@ menu(){
   say " ${G}13${N}  Buka Web Admin"
   say " ${G}14${N}  Hubungkan / putuskan WAN"
   say " ${G}15${N}  Diagnostik koneksi & internet"
+  say " ${G}16${N}  Sinkronisasi update dari GitHub"
   say " ${R}00${N}  Keluar"
   line
   read -r -p " Pilih menu: " choice
@@ -340,6 +368,7 @@ menu(){
     13) open_admin; pause; return;;
     14) require_modem || { pause; return; }; wan_action; return;;
     15) require_modem || { pause; return; }; health_check; return;;
+    16) update_manager; return;;
     12) firmware_info; return;;
     *) require_modem || { pause; return; };;
   esac
