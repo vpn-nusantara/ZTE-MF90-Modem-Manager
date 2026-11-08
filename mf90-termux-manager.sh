@@ -36,7 +36,7 @@ install_deps(){
   for x in curl jq openssl iconv python3 od git; do command -v "$x" >/dev/null 2>&1 || miss+=("$x"); done
   if (("${#miss[@]}")); then
     warn "Dependensi belum lengkap: ${miss[*]}"
-    say "Pasang dengan: pkg update && pkg install curl jq openssl coreutils libiconv python"
+    say "Pasang dengan: pkg update && pkg install git curl jq openssl coreutils libiconv python"
     return 1
   fi
 }
