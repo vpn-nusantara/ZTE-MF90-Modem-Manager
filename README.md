@@ -1,86 +1,45 @@
-# 📡 ZTE MF90 Modem Manager
+# ZTE MF90 Modem Manager
 
-**Aplikasi Pengelola Modem ZTE MF90 – Kontrol Jaringan Internet dalam Satu Genggaman.**
+Manager berbasis Termux untuk ZTE MF90 / MF90 Bolt dengan target firmware Beeline B10. Proyek komunitas independen, bukan aplikasi resmi ZTE.
 
-ZTE MF90 Modem Manager adalah aplikasi Android yang dirancang untuk memudahkan pengguna mengelola dan mengatur modem MiFi ZTE MF90 langsung melalui smartphone.
+## Fitur
 
-Dengan tampilan modern, navigasi sederhana, dan berbagai fitur pengelolaan modem, aplikasi ini hadir untuk memberikan pengalaman konfigurasi modem yang lebih praktis.
+- Dashboard informasi modem, operator, jaringan, dan sinyal.
+- Pemilihan mode jaringan otomatis, LTE, 3G, atau 2G.
+- Lihat dan kelola profil APN.
+- Baca inbox dan kirim SMS.
+- Buka pengaturan Wi-Fi/SSID/password melalui Web Admin.
+- USSD melalui Web Admin.
+- Pemeriksaan informasi band LTE (baca saja).
+- Backup konfigurasi lokal dan panduan pemulihan manual.
+- Kontrol koneksi WAN dengan konfirmasi.
+- Diagnostik koneksi modem dan akses HTTPS internet.
 
-## ✨ Fitur Aplikasi
+## Instalasi Termux
 
-- 📶 Dashboard informasi modem.
-- 🌐 Pengaturan jaringan internet.
-- 📡 Pengaturan nama WiFi (SSID).
-- 🔐 Pengaturan password WiFi.
-- 👥 Manajemen perangkat yang terhubung.
-- 📊 Informasi status koneksi.
-- 🌍 Informasi jaringan dan operator.
-- ⚙️ Akses pengaturan modem melalui `192.168.0.1`.
-- 📱 Tampilan modern dan mudah digunakan.
-- 🔧 Dukungan pengembangan untuk firmware ZTE MF90.
+```bash
+pkg update -y
+pkg install -y git curl jq openssl coreutils libiconv python
+git clone https://github.com/vpn-nusantara/ZTE-MF90-Modem-Manager.git
+cd ZTE-MF90-Modem-Manager
+chmod +x mf90-termux-manager.sh
+./mf90-termux-manager.sh
+```
 
-## 📱 Informasi Kompatibilitas
+Untuk panduan lengkap, kompatibilitas, dan batas keamanan lihat [README-TERMUX.md](README-TERMUX.md).
 
-| Keterangan | Informasi |
-|---|---|
-| Nama aplikasi | ZTE MF90 Modem Manager |
-| Platform | Android |
-| Perangkat | ZTE MF90 |
-| Firmware | Beeline / lainnya |
-| IP Modem | 192.168.0.1 |
-| Koneksi | WiFi modem |
+## Kompatibilitas dan batasan penting
 
-## 🚀 Roadmap Pengembangan
+Target penggunaan adalah ZTE MF90 / MF90 Bolt dengan firmware Beeline B10. API GoForm dapat berbeda antar-revisi perangkat dan firmware. Fitur yang menulis konfigurasi perlu diverifikasi pada modem nyata.
 
-Fitur yang direncanakan untuk pengembangan berikutnya:
+Wi-Fi SSID/password tetap menggunakan Web Admin karena dokumentasi API Beeline B10 yang tersedia belum memverifikasi endpoint Wireless-LAN. Tidak ada penguncian LTE band, modifikasi NV/partisi, atau flashing firmware. Tool ini bukan flasher dan tidak menyertakan image firmware.
 
-- [ ] Penyempurnaan dashboard modem.
-- [ ] Pengembangan pengaturan WiFi lebih lengkap.
-- [ ] Penambahan pilihan negara.
-- [ ] Pengembangan konfigurasi jaringan.
-- [ ] Peningkatan kompatibilitas firmware Beeline.
-- [ ] Eksplorasi dukungan WiFi 5 GHz jika perangkat keras mendukung.
-- [ ] Optimalisasi tampilan dan pengalaman pengguna.
-- [ ] Perbaikan bug dan peningkatan stabilitas.
+Backup dibuat lokal dan tidak boleh diunggah ke repository publik karena dapat memuat identitas perangkat atau data jaringan. Password APN pada backup versi terbaru disamarkan.
 
-## ❤️ Dukung Pengembangan Aplikasi
+## Kontribusi
 
-Pengembangan aplikasi ini membutuhkan waktu, tenaga, dan biaya.
+Saran, laporan bug, dan dokumentasi hasil pengujian pada revisi MF90 yang berbeda sangat diterima. Jangan kirim password, IMEI, IMSI, nomor telepon, atau kredensial jaringan saat membuat laporan.
 
-Dukungan Anda sangat berarti untuk membantu menghadirkan fitur baru, memperbaiki bug, meningkatkan kompatibilitas, serta mengembangkan ZTE MF90 Modem Manager menjadi aplikasi yang lebih lengkap.
+## Disclaimer
 
-### 💝 DONASI PENGEMBANGAN
-
-<p align="center">
-  <img src="donation-qris.png" width="300">
-  <br>
-  <b>Support ZTE MF90 Modem Manager ❤️</b>
-  <br>
-  Scan QRIS untuk berdonasi.
-</p>
-
-Jika aplikasi ini bermanfaat bagi Anda, silakan berikan dukungan melalui QRIS.
-
-Setiap donasi, berapa pun jumlahnya, sangat berarti bagi kelanjutan proyek ini.
-
-**Terima kasih telah mendukung pengembangan ZTE MF90 Modem Manager!**
-
-## 🤝 Kontribusi
-
-Kami terbuka terhadap:
-- Saran dan masukan.
-- Laporan bug.
-- Permintaan fitur baru.
-- Kontribusi pengembangan dari komunitas.
-
-## ⚠️ Disclaimer
-
-ZTE MF90 Modem Manager merupakan aplikasi independen dan bukan aplikasi resmi ZTE Corporation.
-
-Ketersediaan fitur bergantung pada perangkat keras, firmware, dan dukungan antarmuka modem yang digunakan.
-
-## ❤️ Terima Kasih
-
-**Made with ❤️ for ZTE MF90 Users.**
-
-© 2026 ZTE MF90 Modem Manager.
+Gunakan dengan risiko sendiri. Pastikan setiap perubahan konfigurasi dipahami dan selalu periksa hasilnya melalui Web Admin modem.
