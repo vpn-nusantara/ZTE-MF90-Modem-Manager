@@ -170,6 +170,45 @@ apn_write(){
   else warn "Penyimpanan APN belum terkonfirmasi."; fi
   log "Mengirim perubahan APN slot $idx"; pause
 }
+apn_delete(){
+  line; say "HAPUS PROFIL APN"; line
+  local idx conf r
+  warn "Profil APN yang dihapus tidak dapat dipulihkan kecuali Anda memiliki catatan/backup."
+  read -r -p "Nomor slot APN yang akan dihapus (0-19): " idx
+  [[ "$idx" =~ ^([0-9]|1[0-9])$ ]] || { err "Slot harus 0-19."; pause; return; }
+  say "Periksa slot dan profil yang aktif melalui menu 03 sebelum menghapus."
+  read -r -p "Ketik HAPUS-$idx untuk mengonfirmasi: " conf
+  [[ "$conf" == "HAPUS-$idx" ]] || { warn "Dibatalkan."; pause; return; }
+  r="$(api_set 'APN_PROC_EX' 'apn_action=delete' "index=$idx")"
+  show_json "$r"
+  accepted "$r" && ok "Modem menerima permintaan hapus slot $idx." || warn "Penghapusan belum terkonfirmasi."
+  log "Permintaan hapus profil APN slot $idx"
+  pause
+}
+wan_mode(){
+  line; say "MODE DIAL WAN"; line
+  say "1) Otomatis (auto_dial)"
+  say "2) Manual (manual_dial)"
+  say "0) Batal"
+  local n mode conf r
+  read -r -p "Pilih mode: " n
+  case "$n" in
+    1) mode="auto_dial";;
+    2) mode="manual_dial";;
+    0) return;;
+    *) err "Pilihan tidak valid."; pause; return;;
+  esac
+  warn "Mode otomatis dapat memulai koneksi data sesuai profil APN aktif."
+  warn "Opsi roaming otomatis tetap OFF untuk menghindari koneksi data roaming."
+  read -r -p "Ketik TERAPKAN untuk mengubah mode WAN: " conf
+  [[ "$conf" == TERAPKAN ]] || { warn "Dibatalkan."; pause; return; }
+  r="$(api_set 'SET_CONNECTION_MODE' "ConnectionMode=$mode" 'roam_setting_option=off')"
+  show_json "$r"
+  accepted "$r" && ok "Modem menerima mode $mode." || warn "Mode WAN belum terkonfirmasi."
+  log "Permintaan mode WAN $mode (roaming off)"
+  pause
+}
+
 sms_inbox(){
   local raw count i id num body tag dt decoded
   raw="$(curl -fsS --connect-timeout 4 --max-time 20 -b "$COOKIE" -c "$COOKIE" -e "$HOST/index.html" \
@@ -344,7 +383,7 @@ menu(){
   say "${C}   ╚══███╔╝╚══███╔╝██╔════╝   BEELINE B10${N}"
   say "${C}     ███╔╝   ███╔╝ █████╗     TERMUX MANAGER${N}"
   say "${C}    ███╔╝   ███╔╝  ██╔══╝${N}"
-  say "${C}   ███████╗███████╗███████╗   ${W}ULTIMATE${N}"
+  say "${C}   ███████╗███████╗███████╗   ${W}ADVANCED${N}"
   line
   say " Modem : ${W}$HOST${N}"; say " Data  : $DATA_DIR"
   say ""
@@ -364,6 +403,8 @@ menu(){
   say " ${G}14${N}  Hubungkan / putuskan WAN"
   say " ${G}15${N}  Diagnostik koneksi & internet"
   say " ${G}16${N}  Sinkronisasi update dari GitHub"
+  say " ${G}17${N}  Hapus profil APN"
+  say " ${G}18${N}  Mode dial WAN otomatis / manual"
   say " ${R}00${N}  Keluar"
   line
   read -r -p " Pilih menu: " choice
@@ -373,6 +414,8 @@ menu(){
     14) require_modem || { pause; return; }; wan_action; return;;
     15) require_modem || { pause; return; }; health_check; return;;
     16) update_manager; return;;
+    17) require_modem || { pause; return; }; apn_delete; return;;
+    18) require_modem || { pause; return; }; wan_mode; return;;
     12) firmware_info; return;;
     *) require_modem || { pause; return; };;
   esac
