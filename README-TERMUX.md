@@ -1,8 +1,8 @@
 # ZTE MF90 Beeline B10 — Termux Modem Manager
 
-Manager terminal interaktif untuk **ZTE MF90 / MF90 Bolt** dengan target firmware **Beeline B10**. Proyek komunitas independen; bukan aplikasi resmi ZTE/Beeline.
+Manager CLI interaktif untuk ZTE MF90 / MF90 Bolt. Target pengujian pengguna: firmware `BD_RUS_BEELINE_MF90V1.0.0B10`. Proyek independen, bukan aplikasi resmi ZTE/Beeline.
 
-## Instalasi cepat di Termux
+## Instalasi
 
 ```bash
 pkg update -y
@@ -13,52 +13,49 @@ chmod +x mf90-termux-manager.sh
 ./mf90-termux-manager.sh
 ```
 
-Jika repo sudah ada:
+Pembaruan:
 ```bash
 cd ZTE-MF90-Modem-Manager
 git pull
 ./mf90-termux-manager.sh
 ```
 
-Default alamat modem adalah `http://192.168.0.1`. Jika berbeda:
+Alamat default modem `http://192.168.0.1`. Jika IP berbeda:
 ```bash
 MF90_HOST=192.168.0.1 ./mf90-termux-manager.sh
 ```
 
-## Menu
+## Menu manager
 
-1. Dashboard dan informasi firmware/jaringan/sinyal.
-2. Pemilihan mode jaringan otomatis, LTE, 3G, atau 2G.
-3. Membaca profil APN.
-4. Menambah atau mengubah profil APN.
-5. Membaca inbox SMS.
-6. Mengirim SMS (memerlukan konfirmasi; biaya operator mungkin berlaku).
-7. Pengaturan Wi-Fi/SSID/password melalui Web Admin.
-8. USSD melalui Web Admin.
-9. Pemeriksaan informasi LTE band/sinyal.
-10. Backup konfigurasi lokal.
-11. Membaca backup dan membuka Web Admin untuk pemulihan manual.
-12. Informasi firmware Beeline B10.
-13. Membuka Web Admin.
+| Menu | Fitur |
+|---|---|
+| 01 | Dashboard modem, firmware, jaringan, dan sinyal |
+| 02 | Pilih jaringan otomatis / LTE / 3G / 2G |
+| 03–04 | Lihat dan simpan profil APN |
+| 05–06 | Inbox dan pengiriman SMS |
+| 07 | Pengaturan Wi-Fi lewat Web Admin |
+| 08 | USSD lewat Web Admin |
+| 09 | Informasi band dan sinyal (baca saja) |
+| 10–11 | Backup lokal dan panduan restore APN |
+| 12–13 | Informasi firmware dan buka Web Admin |
+| 14 | Hubungkan / putuskan koneksi WAN (konfirmasi wajib) |
+| 15 | Diagnostik akses modem dan HTTPS internet |
 
-## Catatan kompatibilitas dan keamanan
+## Keamanan dan batas kompatibilitas
 
-- API GoForm, autentikasi, field status, APN, SMS, dan network mode berbeda antar-revisi MF90 dan build firmware. Keberhasilan respons HTTP belum tentu berarti perubahan diterapkan; periksa kembali dari Web Admin.
-- Wi-Fi/SSID/password dan USSD diarahkan ke Web Admin karena endpoint tulis B10 belum diverifikasi pada semua perangkat.
-- Penguncian LTE band tidak dijalankan. Manager hanya membaca field sinyal/band jika firmware mengeksposnya.
-- Backup disimpan di `~/MF90_Manager/backups` dengan permission terbatas. Backup mungkin berisi username/password APN. Jangan commit backup, cookie, IMEI, nomor SIM, atau konfigurasi pribadi ke GitHub.
-- Password admin tidak ditulis ke log dan cookie sesi dihapus saat program keluar.
-- Manager ini **bukan flasher**. Firmware Beeline B10 tidak disertakan. Cocokkan model dan revisi hardware secara persis sebelum memakai image firmware apa pun. Salah image dapat membuat modem gagal boot.
-- MF90 dengan radio Wi-Fi 2.4 GHz tidak dapat memperoleh radio 5 GHz hanya melalui modifikasi firmware.
+- Endpoint GoForm dan field API dapat berbeda menurut revisi hardware dan build firmware. Menu tulis memerlukan konfirmasi dan hasilnya harus diverifikasi lagi dari Web Admin.
+- Perintah WAN memakai form ID `CONNECT_NETWORK` dan `DISCONNECT_NETWORK` yang didokumentasikan untuk Beeline MF90. Tidak ada jaminan kompatibilitas pada setiap unit.
+- Pengaturan Wi-Fi SSID/password tetap melalui Web Admin. Dokumentasi reverse-engineering Beeline B10 mencantumkan Wireless-LAN sebagai area yang belum terverifikasi; manager tidak mengirim endpoint Wi-Fi tebakan.
+- Penguncian LTE band, perubahan NV/partisi, reboot paksa, dan flashing firmware tidak disediakan.
+- Backup lokal berada di `~/MF90_Manager/backups`, permission dibatasi, dan password APN disamarkan pada backup baru. Jangan pernah unggah cookie, backup, IMEI, IMSI, nomor SIM, atau data pribadi ke repository publik.
+- Password admin tidak dicatat ke log. Cookie sesi dihapus saat manager keluar.
+- Manager bukan flasher dan tidak menyertakan firmware. Image yang salah dapat membuat modem gagal boot.
+- Modem hanya dapat memakai kemampuan radio yang didukung hardware; software tidak dapat menambahkan Wi-Fi 5 GHz pada perangkat 2.4 GHz.
 
 ## Troubleshooting
 
-- Pastikan HP terhubung ke Wi-Fi modem.
-- Buka `http://192.168.0.1` di browser dan pastikan halaman admin dapat diakses.
-- Jika IP berbeda, jalankan dengan variabel `MF90_HOST`.
-- Bila login/API ditolak, lakukan login di Web Admin dan cek ulang dukungan API pada build firmware.
-- Jangan mencoba endpoint tulis yang tidak dikenal.
+1. Hubungkan HP ke Wi-Fi modem.
+2. Pastikan Web Admin bisa dibuka di browser.
+3. Jalankan dengan `MF90_HOST` jika IP bukan `192.168.0.1`.
+4. Jika autentikasi/API gagal, login ke Web Admin dan periksa kompatibilitas firmware. Jangan mencoba endpoint tulis yang tidak dikenal.
 
-## Lisensi
-
-Tambahkan lisensi proyek sesuai pilihan pemilik repository. Gunakan dan modifikasi dengan risiko sendiri.
