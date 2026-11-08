@@ -248,7 +248,7 @@ restore_info(){
 }
 
 wan_action(){
-  line; say "\${W}KONTROL KONEKSI WAN\${N}"; line
+  line; say "${W}KONTROL KONEKSI WAN${N}"; line
   say "1) Hubungkan internet seluler"
   say "2) Putuskan koneksi internet seluler"
   say "0) Batal"
@@ -276,7 +276,7 @@ wan_action(){
   pause
 }
 health_check(){
-  line; say "\${W}DIAGNOSTIK JARINGAN\${N}"; line
+  line; say "${W}DIAGNOSTIK JARINGAN${N}"; line
   say "Host modem : $HOST"
   if probe; then ok "Web Admin modem dapat dijangkau."
   else err "Web Admin modem tidak merespons."; fi
