@@ -41,13 +41,13 @@ MF90_HOST=192.168.0.1 ./mf90-termux-manager.sh
 | 14 | Hubungkan / putuskan koneksi WAN (konfirmasi wajib) |
 | 15 | Diagnostik akses modem dan HTTPS internet |
 | 16 | Sinkronisasi GitHub dengan fast-forward only |
-| 17 | Hapus profil APN (konfirmasi slot) |
+| 17 | Hapus profil APN (slot aktif dilindungi + konfirmasi) |
 | 18 | Mode dial WAN otomatis / manual (roaming off) |
 
 ## Keamanan dan batas kompatibilitas
 
 - Endpoint GoForm dan field API dapat berbeda menurut revisi hardware dan build firmware. Menu tulis memerlukan konfirmasi dan hasilnya harus diverifikasi lagi dari Web Admin.
-- Perintah WAN memakai form ID `CONNECT_NETWORK` dan `DISCONNECT_NETWORK`; mode dial memakai `SET_CONNECTION_MODE`; penghapusan profil memakai `APN_PROC_EX` dengan `apn_action=delete`. Endpoint tersebut didokumentasikan untuk Beeline MF90, tetapi tetap perlu diuji pada unit Anda.
+- Perintah WAN memakai form ID `CONNECT_NETWORK` dan `DISCONNECT_NETWORK`; mode dial memakai `SET_CONNECTION_MODE`; penghapusan profil memakai `APN_PROC_EX` dengan `apn_action=delete`. Menu hapus memeriksa `Current_index` dan menolak menghapus profil yang sedang aktif. Endpoint tersebut didokumentasikan untuk Beeline MF90, tetapi tetap perlu diuji pada unit Anda.
 - Pengaturan Wi-Fi SSID/password tetap melalui Web Admin. Dokumentasi reverse-engineering Beeline B10 mencantumkan Wireless-LAN sebagai area yang belum terverifikasi; manager tidak mengirim endpoint Wi-Fi tebakan.
 - Penguncian LTE band, perubahan NV/partisi, reboot paksa, dan flashing firmware tidak disediakan.
 - Backup lokal berada di `~/MF90_Manager/backups`, permission dibatasi, dan password APN dan blob profil APN disamarkan pada backup baru. Jangan pernah unggah cookie, backup, IMEI, IMSI, nomor SIM, atau data pribadi ke repository publik.
