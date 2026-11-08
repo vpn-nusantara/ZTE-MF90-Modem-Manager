@@ -1,23 +1,22 @@
-# ZTE MF90 Modem Manager
+# ZTE MF90 Modem Manager — SAFE
 
-Manager ADVANCED berbasis Termux untuk ZTE MF90 / MF90 Bolt dengan target firmware `BD_RUS_BEELINE_MF90V1.0.0B10`. Proyek komunitas independen, bukan aplikasi resmi ZTE.
+Manager berbasis Termux untuk ZTE MF90 / MF90 Bolt dengan target firmware `BD_RUS_BEELINE_MF90V1.0.0B10`. SAFE adalah profil **read-only** untuk pemantauan dan pencadangan lokal. Proyek komunitas independen, bukan aplikasi resmi ZTE.
 
-## Fitur
+## Fitur SAFE
+- Dashboard status modem, jaringan, operator, dan sinyal.
+- Baca profil APN tanpa mengubahnya.
+- Baca inbox SMS tanpa mengirim atau menghapus pesan.
+- Informasi band LTE (baca saja); tidak ada band lock.
+- Backup lokal dengan penyamaran data APN dan profil.
+- Panduan pemulihan manual; tidak ada restore otomatis.
+- Diagnostik koneksi modem dan akses HTTPS.
+- Membuka Web Admin untuk pengaturan manual.
+- Pembaruan GitHub melalui `git pull --ff-only`.
 
-- Dashboard informasi modem, operator, jaringan, dan sinyal.
-- Pemilihan mode jaringan otomatis, LTE, 3G, atau 2G.
-- Lihat, buat, ubah, dan hapus profil APN dengan konfirmasi.
-- Baca inbox dan kirim SMS.
-- Buka pengaturan Wi-Fi/SSID/password melalui Web Admin.
-- USSD melalui Web Admin.
-- Pemeriksaan informasi band LTE (baca saja).
-- Backup konfigurasi lokal dan panduan pemulihan manual.
-- Kontrol koneksi WAN dan mode dial otomatis/manual.
-- Diagnostik koneksi modem dan akses HTTPS internet.
-- Sinkronisasi pembaruan repository melalui GitHub (fast-forward only).
+## Dinonaktifkan pada SAFE
+Pemilihan mode jaringan, tambah/ubah/hapus APN, pengiriman SMS, kontrol WAN, dan perubahan mode dial. SAFE tidak mengirim perintah perubahan konfigurasi ke endpoint GoForm. Login hanya dipakai untuk membuat sesi baca. Perubahan yang dilakukan manual melalui Web Admin tetap dapat mengubah modem.
 
-## Instalasi Termux
-
+## Instalasi
 ```bash
 pkg update -y
 pkg install -y git curl jq openssl coreutils libiconv python
@@ -27,20 +26,23 @@ chmod +x mf90-termux-manager.sh
 ./mf90-termux-manager.sh
 ```
 
-Untuk panduan lengkap, kompatibilitas, dan batas keamanan lihat [README-TERMUX.md](README-TERMUX.md).
+Default IP modem: `192.168.0.1`. Jika berbeda:
+```bash
+MF90_HOST=192.168.0.1 ./mf90-termux-manager.sh
+```
 
-## Kompatibilitas dan batasan penting
+Data lokal berada di `~/MF90_Manager`; cookie sesi dihapus saat program keluar. Permission folder, cookie, log, dan backup dibatasi oleh `umask 077`. Backup menyamarkan nama profil, APN, username, password, dan blob profil APN. Jangan unggah backup atau log ke repository publik.
 
-Target penggunaan adalah ZTE MF90 / MF90 Bolt dengan firmware Beeline B10. API GoForm dapat berbeda antar-revisi perangkat dan firmware. Fitur yang menulis konfigurasi perlu diverifikasi pada modem nyata.
+## Batas keselamatan
+- Tidak ada flashing firmware, NV/partisi write, reboot paksa, band lock, atau restore otomatis.
+- Tidak ada endpoint Wi-Fi/USSD tebakan. Fitur tersebut hanya membuka Web Admin.
+- API komunitas bukan dokumentasi resmi; respons dan field dapat berbeda antar revisi MF90.
+- Gunakan hanya melalui Wi-Fi modem sendiri yang tepercaya. Login melalui HTTP lokal tidak terenkripsi; hindari jaringan publik.
+- SAFE belum diuji langsung pada perangkat fisik pengguna.
 
-Wi-Fi SSID/password tetap menggunakan Web Admin karena dokumentasi API yang tersedia belum memverifikasi endpoint Wireless-LAN. Tidak ada penguncian LTE band, modifikasi NV/partisi, atau flashing firmware. Tool ini bukan flasher dan tidak menyertakan image firmware.
-
-Backup dibuat lokal dan tidak boleh diunggah ke repository publik karena dapat memuat identitas perangkat atau data jaringan. Password APN dan blob profil APN pada backup baru disamarkan.
-
-## Kontribusi
-
-Saran, laporan bug, dan dokumentasi hasil pengujian pada revisi MF90 yang berbeda sangat diterima. Jangan kirim password, IMEI, IMSI, nomor telepon, atau kredensial jaringan saat membuat laporan.
+## Referensi
+- [Dokumentasi komunitas Beeline MF90 API](https://wijayamin.github.io/zte-modem-api-docs/)
+- [Panduan Termux](README-TERMUX.md)
 
 ## Disclaimer
-
-Gunakan dengan risiko sendiri. Pastikan setiap perubahan konfigurasi dipahami dan selalu periksa hasilnya melalui Web Admin modem.
+Gunakan dengan risiko sendiri. Proyek ini tidak berafiliasi dengan ZTE atau Beeline.
