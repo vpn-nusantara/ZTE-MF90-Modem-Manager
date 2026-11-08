@@ -75,8 +75,9 @@ login(){
 api_get(){
   local cmd="$1"
   curl -fsS --connect-timeout 4 --max-time 18 -b "$COOKIE" -c "$COOKIE" \
-    -H 'Accept: application/json, text/javascript, */*; q=0.01' -e "$HOST/index.html" \
-    --get --data-urlencode "cmd=$cmd" "$HOST/goform/goform_get_cmd_process"
+    -H 'Accept: application/json, text/javascript, */*; q=0.01' \
+    -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -e "$HOST/index.html" \
+    --data-urlencode "cmd=$cmd" "$HOST/goform/goform_get_cmd_process"
 }
 api_set(){
   local form="$1"; shift
