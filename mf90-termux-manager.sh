@@ -224,7 +224,7 @@ backup_menu(){
   a="$(api_get 'm_profile_name,Current_index,wan_apn,pdp_type,ppp_auth_mode,wan_dial,ppp_username,ppp_passwd,dns_mode,APN_config0,APN_config1,APN_config2,APN_config3,APN_config4')"
   b="$(api_get 'APN_config5,APN_config6,APN_config7,APN_config8,APN_config9,APN_config10,APN_config11,APN_config12,APN_config13,APN_config14,APN_config15,APN_config16,APN_config17,APN_config18,APN_config19')"
   if jq -n --argjson device "$d" --argjson apn "$a" --argjson more "$b" \
-    '{created_at:(now|todate),device:"ZTE MF90",firmware_target:"Beeline B10",status:$device,apn:($apn | .ppp_passwd="[REDACTED]"),apn_extra:$more}' >"$f" 2>/dev/null; then
+    '{created_at:(now|todate),device:"ZTE MF90",firmware_target:"Beeline B10",status:$device,apn:($apn | .ppp_passwd="[REDACTED]" | with_entries(if (.key|startswith("APN_config")) then .value="[REDACTED: profile may contain credentials]" else . end)),apn_extra:($more | with_entries(if (.key|startswith("APN_config")) then .value="[REDACTED: profile may contain credentials]" else . end))}' >"$f" 2>/dev/null; then
     chmod 600 "$f"; ok "Backup lokal: $f"
     warn "Backup dapat memuat kredensial APN. Jangan unggah ke GitHub atau kirim ke orang lain."
     log "Backup konfigurasi dibuat: $(basename "$f")"
