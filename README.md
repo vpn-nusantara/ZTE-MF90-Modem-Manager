@@ -44,6 +44,11 @@ This project currently focuses on the modem's 4G LTE management capabilities. Wi
 ## 💖 Support development — Donate via QRIS
 
 If this project helps you, you can support continued development through **QRIS**.
+## 💝 Donasi QRIS
+
+<p align="center">
+  <img src="assets/qris.png" alt="QRIS Donasi VPN-NUSANTARA" width="300">
+</p>
 
 Your contribution helps with testing, bug fixes, documentation, and development of new features.
 
